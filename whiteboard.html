@@ -1,0 +1,27 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<script type="text/javascript" src="http://localhost:8081/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="http://georgealways.github.com/gee/build/gee.min.js"></script>
+<script type="text/javascript">
+var socket = io.connect();
+ 
+window.onload = function() {
+    var g = new GEE( { fullscreen: true } );
+    function drawLine(startX, startY, endX, endY) {
+        g.ctx.beginPath();
+        g.ctx.moveTo( startX, startY );  
+        g.ctx.lineTo( endX, endY );
+        g.ctx.stroke();
+    };
+    g.mousedrag = function() {  
+        drawLine(g.pmouseX, g.pmouseY, g.mouseX, g.mouseY);  
+        socket.emit('draw', { startX: g.pmouseX, startY : g.pmouseY, endX: g.mouseX, endY: g.mouseY });
+    };
+    socket.on('draw', function(data) {
+        drawLine(data.startX, data.startY, data.endX, data.endY);
+    });
+};
+</script>
